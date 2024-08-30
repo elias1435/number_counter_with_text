@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter Number</title>
+
+    <style>
+
+        .full-screen-height {
+        height: 100vh; /* Full screen height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div id="services" class="full-screen-height">
+        <div class="elementor-counter" data-target="100">0</div>
+        <div class="elementor-counter" data-target="200">0</div>
+        <div class="elementor-counter" data-target="300">0</div>
+      </div>
+      
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+  const counters = document.querySelectorAll('.elementor-counter');
+
+  // Function to reset and start the counters
+  function startCounters(counter) {
+    const target = +counter.getAttribute('data-target');
+    counter.textContent = '0';
+
+    // Determine appropriate speed settings based on the target value
+    const increment = target > 100 ? Math.ceil(target / 100) : 1; // Slower for smaller numbers
+    const speed = target > 100 ? 20 : 50; // Higher delay for smaller targets for slower effect
+
+    const updateCounter = () => {
+      const current = +counter.textContent;
+
+      if (current < target) {
+        counter.textContent = `${Math.min(current + increment, target)}`; // Prevent going over target
+        setTimeout(updateCounter, speed); // Adjust timing for speed
+      } else {
+        counter.textContent = target; // Ensure it matches the target exactly
+      }
+    };
+
+    // Start the counter after a 0.5-second delay
+    setTimeout(updateCounter, 500);
+  }
+
+  // Intersection Observer options
+  const observerOptions = {
+    root: null, // Observes within the viewport
+    rootMargin: '0px',
+    threshold: 0.5, // Trigger when 50% of #services is visible
+  };
+
+  // Intersection Observer callback
+  const observerCallback = (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        counters.forEach((counter) => {
+          setTimeout(() => startCounters(counter), 500); // Delays start by 0.5 seconds
+        });
+      }
+    });
+  };
+
+  // Create the observer
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+  // Start observing the #services section
+  const servicesSection = document.getElementById('services');
+  observer.observe(servicesSection);
+});
+
+
+</script>
+
+</body>
+</html>
